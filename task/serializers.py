@@ -1,66 +1,66 @@
-from rest_framework.serializers import Serializer , ModelSerializer
+from rest_framework import serializers as srzs
 from .models import List , Task , Comment
 from usualFuncs import generator
 
 
+class TaskCreateSerializer(srzs.ModelSerializer):
 
+    class Meta:
+        model = Task
+        fields = ('id', 'context', 'status', 'related_list')
+        extra_kwargs = {
+            'id' : generator(read_only = True),
+        }
 
+class TaskURDSerializer(srzs.ModelSerializer):
 
-# class TaskCreateSerializer(ModelSerializer):
+    class Meta:
+        model = Task
+        fields = '__all__'
+        extra_kwargs = {
+            'id' : generator(read_only = True),
+        }
 
-#     class Meta:
-#         model = Task
-#         fields = ()
+class TaskListSerializer(srzs.ModelSerializer):
 
+    comment_count = srzs.SerializerMethodField()
 
+    class Meta:
+        model = Task
+        fields = ('id', 'context', 'status', 'comment_count')
+        extra_kwargs = {
+            'id' : generator(read_only = True),
+        }
 
+    def get_comment_count(self, obj):
+        return obj.comments.count()
 
+class ListLSerializer(srzs.ModelSerializer):
 
-
-
-# class TaskCLSerializer(ModelSerializer):
-
-#     class Meta:
-#         model = Task
-#         fields = '__all__'
-#         extra_kwargs = {
-#             'percentage'   : generator(read_only = True),
-#             'id'           : generator(read_only = True),
-#             'date_created' : generator(read_only = True),
-#         }
-
-# class TaskSerializerInner(ModelSerializer):
-
-#     class Meta:
-#         model = Task
-#         excludes = ('list',)
-#         extra_kwargs = {
-#             'id'           : generator(read_only = True),
-#             'date_created' : generator(read_only = True),
-#         }
-
-
-# class ListCLSerializer(ModelSerializer):
-
-#     tasks = TaskSerializerInner(many = True, source = 'tasks', required = False, read_only = True)
+    tasks = TaskListSerializer(many = True )
     
-#     class Meta:
-#         model = List
-#         fields = ('id' , 'name' , 'project' , 'date_created' , 'tasks')
-#         extra_kwargs = {
-#             'id'           : generator(read_only  = True),
-#             'date_created' : generator(read_only  = True),
-#             'project'      : generator(write_only = True),
-#         }
+    class Meta:
+        model = List
+        fields = ('id' , 'name', 'tasks')
+        extra_kwargs = {
+            'id'           : generator(read_only  = True),
+            'date_created' : generator(read_only  = True),
+        }
 
-# class ListUDSerializer(ModelSerializer):
-
-#     class Meta:
-#         model = List
-#         excludes = ('project',)
-#         extra_kwargs = {
-#             'date_created' : generator(read_only = True),
-#         }
-
-
+class ListCreateSerializer(srzs.ModelSerializer):
     
+    class Meta:
+        model = List
+        fields = ('id', 'name', 'project')
+        extra_kwargs = {
+            'id' : generator(read_only = True),
+        }
+
+class ListUDSerializer(srzs.ModelSerializer):
+
+    class Meta:
+        model = List
+        exclude = ('project',)
+        extra_kwargs = {
+            'date_created' : generator(read_only = True),
+        }
