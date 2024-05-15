@@ -10,7 +10,7 @@ class Board(models.Model):
 	owner = models.ForeignKey(User , on_delete = models.CASCADE, related_name = 'Board_set')
 
 	def __str__(self):
-		return self.name
+		return f'board ({self.id}) -> {self.name}'
 		
 
 class Project(models.Model):
@@ -21,4 +21,4 @@ class Project(models.Model):
 	board = models.ForeignKey(Board, on_delete = models.CASCADE , related_name = 'project_set')
 
 	def __str__(self):
-		return f'{self.board.name} - {self.name}'
+		return f'project ({self.id}) -> {self.name} , {self.board.name}'
